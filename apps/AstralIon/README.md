@@ -6,7 +6,16 @@ Application de la suite **Astral Studio** (voir le depot `Astral-studio`, dossie
 
 ## Lancer l'application
 
-Ouvrir `index.html` dans un navigateur moderne. Aucune installation requise.
+Deux methodes, sans installation :
+
+1. Ouvrir `index.html` directement dans un navigateur moderne (double-clic).
+2. Serveur local (recommande, evite les restrictions `file://`) :
+
+```
+npm run serve
+```
+
+Ouvre `http://localhost:8080/` automatiquement. Autre port : `set PORT=8090` puis `npm run serve` (Windows) ou `PORT=8090 npm run serve` (macOS/Linux). `NO_OPEN=1` empeche l'ouverture auto.
 
 ## Fonctionnalites
 
@@ -62,6 +71,7 @@ test/
   astralion-test.js  harnais de tests (Node, sans dependance)
 scripts/
   check.js        verification syntaxique de tous les .js
+  serve.js        serveur statique local (npm run serve)
 ```
 
 ## Tests
@@ -69,7 +79,7 @@ scripts/
 Sans dependance, via Node :
 
 ```
-npm test      # harnais de tests (test/ion-test.js)
+npm test      # harnais de tests (test/astralion-test.js)
 npm run check # verification syntaxique de tous les fichiers .js
 npm run verify
 ```
