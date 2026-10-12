@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstralPhoto — Éditeur d'images</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= MENU BAR ======= -->
+  <div class="menubar">
+    <span class="brand">AstralPhoto</span>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Fichier</button>
+      <div class="menu-drop">
+        <button data-action="new">Nouveau<span class="k">Ctrl+N</span></button>
+        <button data-action="open-image">Ouvrir une image…</button>
+        <div class="sep"></div>
+        <button data-action="export-png">Exporter en PNG…</button>
+        <button data-action="export-jpg">Exporter en JPEG…</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Édition</button>
+      <div class="menu-drop">
+        <button data-action="undo">Annuler<span class="k">Ctrl+Z</span></button>
+        <button data-action="redo">Rétablir<span class="k">Ctrl+Maj+Z</span></button>
+        <div class="sep"></div>
+        <button data-action="copy">Copier<span class="k">Ctrl+C</span></button>
+        <button data-action="paste">Coller<span class="k">Ctrl+V</span></button>
+        <div class="sep"></div>
+        <button data-action="fill-fg">Remplir avec la couleur de premier plan</button>
+        <button data-action="fill-bg">Remplir avec la couleur d'arrière-plan</button>
+        <button data-action="clear">Effacer<span class="k">Suppr</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Image</button>
+      <div class="menu-drop">
+        <button data-action="image-size">Taille de l'image…</button>
+        <button data-action="crop-apply">Recadrer</button>
+        <div class="sep"></div>
+        <button data-action="rotate-90">Rotation 90° horaire</button>
+        <button data-action="rotate-180">Rotation 180°</button>
+        <button data-action="flip-h">Symétrie horizontale</button>
+        <button data-action="flip-v">Symétrie verticale</button>
+        <div class="sep"></div>
+        <button data-action="adj-brightness">Luminosité / Contraste…</button>
+        <button data-action="adj-hue">Teinte / Saturation…</button>
+        <button data-action="adj-grayscale">Noir et blanc</button>
+        <button data-action="adj-invert">Inverser</button>
+        <button data-action="adj-sepia">Sépia</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Filtre</button>
+      <div class="menu-drop">
+        <button data-action="f-blur">Flou gaussien</button>
+        <button data-action="f-sharpen">Netteté</button>
+        <div class="sep"></div>
+        <button data-action="f-edge">Détection de contours</button>
+        <button data-action="f-emboss">Estampage</button>
+        <button data-action="f-threshold">Seuil…</button>
+        <button data-action="f-posterize">Postériser…</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Calque</button>
+      <div class="menu-drop">
+        <button data-action="layer-new">Nouveau calque</button>
+        <button data-action="layer-duplicate">Dupliquer le calque</button>
+        <button data-action="layer-delete">Supprimer le calque</button>
+        <div class="sep"></div>
+        <button data-action="layer-top">Placer au-dessus</button>
+        <button data-action="layer-up">Avancer</button>
+        <button data-action="layer-down">Reculer</button>
+        <button data-action="layer-bottom">Placer en dessous</button>
+        <div class="sep"></div>
+        <button data-action="layer-merge">Fusionner vers le bas</button>
+        <button data-action="layer-flatten">Aplatir l'image</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Sélection</button>
+      <div class="menu-drop">
+        <button data-action="select-all">Tout sélectionner<span class="k">Ctrl+A</span></button>
+        <button data-action="deselect">Désélectionner<span class="k">Ctrl+D</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Affichage</button>
+      <div class="menu-drop">
+        <button data-action="zoom-in">Zoom avant<span class="k">Ctrl++</span></button>
+        <button data-action="zoom-out">Zoom arrière<span class="k">Ctrl+-</span></button>
+        <button data-action="fit">Ajuster à la fenêtre<span class="k">Ctrl+0</span></button>
+        <button data-action="zoom-100">Taille réelle (100%)</button>
+        <div class="sep"></div>
+        <button data-action="toggle-grid">Afficher / masquer la grille</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Aide</button>
+      <div class="menu-drop">
+        <button data-action="about">À propos d'AstralPhoto</button>
+      </div>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <input id="docName" class="doc-name" type="text" value="Sans titre" spellcheck="false" />
+  </div>
+
+  <!-- ======= CONTROL BAR ======= -->
+  <div class="controlbar">
+    <div class="cb-group cb-empty">
+      <span class="cb-hint"><b>V</b> déplacer · <b>M</b> sélection · <b>B</b> pinceau · <b>E</b> gomme · <b>T</b> texte · <b>C</b> recadrage</span>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbBrush" style="display:none">
+      <label class="cb-field"><span>Diamètre</span><input id="cbBrushSize" type="number" min="1" max="500" step="1" /></label>
+      <label class="cb-field"><span>Dureté</span><input id="cbBrushHard" type="range" min="0" max="100" /></label>
+      <label class="cb-field"><span>Opacité</span><input id="cbBrushOp" type="range" min="0" max="100" /></label>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbText" style="display:none">
+      <label class="cb-field"><span>Police</span>
+        <select id="cbFont" class="cb-select">
+          <option value="Inter, Arial, sans-serif">Sans-serif</option>
+          <option value="Georgia, serif">Serif</option>
+          <option value="Courier New, monospace">Monospace</option>
+          <option value="Impact, sans-serif">Impact</option>
+        </select>
+      </label>
+      <label class="cb-field"><span>Taille</span><input id="cbFontSize" type="number" min="4" max="500" step="1" /></label>
+      <button class="icon-btn" id="cbBold" title="Gras"><b>B</b></button>
+      <button class="icon-btn" id="cbItalic" title="Italique"><i>I</i></button>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbShape" style="display:none">
+      <label class="cb-field"><span>Rayon</span><input id="cbShapeRadius" type="number" min="0" max="400" step="1" /></label>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbCrop" style="display:none">
+      <button class="mini" id="cropApply">Appliquer le recadrage</button>
+      <button class="mini" id="cropCancel">Annuler</button>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbFill" style="display:none">
+      <label class="cb-field"><span>Tolérance</span><input id="cbTolerance" type="number" min="0" max="255" step="1" /></label>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <div class="cb-group cb-history">
+      <button class="icon-btn" id="undoBtn" title="Annuler">&#8630;</button>
+      <button class="icon-btn" id="redoBtn" title="Rétablir">&#8631;</button>
+    </div>
+    <div class="cb-group cb-zoom">
+      <button class="zbtn" id="zoomOut">−</button>
+      <span class="zval" id="zoomVal">100%</span>
+      <button class="zbtn" id="zoomIn">+</button>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="main">
+
+    <!-- LEFT TOOL RAIL -->
+    <aside class="toolrail" role="toolbar" aria-label="Outils" aria-orientation="vertical">
+      <div class="tool-grid">
+        <button class="tool" data-tool="move" title="Déplacement (V)">
+          <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="marquee" title="Rectangle de sélection (M)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"/></svg>
+        </button>
+        <button class="tool" data-tool="ellipse-select" title="Sélection elliptique (Maj+M)">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"/></svg>
+        </button>
+        <button class="tool" data-tool="lasso" title="Lasso (L)">
+          <svg viewBox="0 0 24 24"><path d="M12 4C7 4 4 6.7 4 9.6c0 2 1.6 3.6 4 4.4-.4 1 .2 1.9-.6 2.6-.6.6-1.4.5-1.7 1.3-.3.9.6 1.6 1.6 1.1 1.3-.7 1.5-2.2 1.9-3.3L10 15c3.6-.3 6-1 7.6-2.3C19.4 11.2 20 10.2 20 9.6 20 6.7 17 4 12 4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+
+        <button class="tool" data-tool="brush" title="Pinceau (B)">
+          <svg viewBox="0 0 24 24"><path d="M15 4l5 5-8.5 8.5L7 19l1.5-4.5L17 6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 19c-1.5.5-3 .8-4 .8.8-1.2 1-2.6 1.5-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="pencil" title="Crayon (N)">
+          <svg viewBox="0 0 24 24"><path d="M4 20l3-1 11-11-2-2L5 17l-1 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="eraser" title="Gomme (E)">
+          <svg viewBox="0 0 24 24"><path d="M8 20h11M6 16l8-8 6 6-4 4H9l-3-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="bucket" title="Pot de peinture (W)">
+          <svg viewBox="0 0 24 24"><path d="M5 12l7-7 6 6-7 7-6-6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M19 14c1.2 1.6 2 2.6 2 3.6a2 2 0 1 1-4 0c0-1 .8-2 2-3.6z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+
+        <button class="tool" data-tool="gradient" title="Dégradé (G)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 19l16-14" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button class="tool" data-tool="shape" title="Forme (U)">
+          <svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+
+        <button class="tool" data-tool="text" title="Texte (T)">
+          <svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M8.5 20h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="eyedropper" title="Pipette (I)">
+          <svg viewBox="0 0 24 24"><path d="M15 4l5 5-9 9-4 1 1-4 9-9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M13 6l5 5" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+
+        <button class="tool" data-tool="crop" title="Recadrage (C)">
+          <svg viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="hand" title="Main (H)">
+          <svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 1 1 3 0V11m0-1v2m0-2.5V4.5a1.5 1.5 0 1 1 3 0V12m0-1v1m0-2.5a1.5 1.5 0 1 1 3 0V16a5 5 0 0 1-5 5h-1.2a4 4 0 0 1-3-1.4L6.5 16 5 14.2a1.6 1.6 0 0 1 2.4-2.1L9 13.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="zoom" title="Zoom (Z)">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 15.5 20 20M11 8.5v5M8.5 11h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="colorwidget" title="Couleur de premier plan / arrière-plan">
+        <button class="cw-bg" id="cwBg" title="Arrière-plan"></button>
+        <button class="cw-fg" id="cwFg" title="Premier plan"></button>
+        <button class="cw-swap" id="cwSwap" title="Inverser (X)">&#8644;</button>
+        <button class="cw-default" id="cwDefault" title="Défaut (D)">&#9634;</button>
+      </div>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <div class="workspace" id="workspace">
+      <canvas id="canvas" tabindex="0" role="application" aria-label="Canevas d'image"></canvas>
+      <textarea id="textOverlay" class="text-overlay" spellcheck="false"></textarea>
+    </div>
+
+    <!-- RIGHT DOCK -->
+    <aside class="dock" id="dock">
+
+      <section class="panel" data-panel="color">
+        <header class="panel-head"><span>Couleur</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="color-big">
+            <button class="color-chip" id="fgChip" title="Premier plan"><span id="fgHex">#000000</span></button>
+            <button class="color-chip" id="bgChip" title="Arrière-plan"><span id="bgHex">#ffffff</span></button>
+          </div>
+          <div class="swatches" id="swatches"></div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="brush">
+        <header class="panel-head"><span>Pinceau</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="appr-row">
+            <span class="appr-label">Diamètre</span>
+            <input id="brushSize" type="range" min="1" max="200" value="24" />
+            <input id="brushSizeNum" class="tiny-num" type="number" min="1" max="500" value="24" />
+          </div>
+          <div class="appr-row">
+            <span class="appr-label">Dureté</span>
+            <input id="brushHard" type="range" min="0" max="100" value="80" />
+            <input id="brushHardNum" class="tiny-num" type="number" min="0" max="100" value="80" />
+          </div>
+          <div class="appr-row">
+            <span class="appr-label">Opacité</span>
+            <input id="brushOp" type="range" min="1" max="100" value="100" />
+            <input id="brushOpNum" class="tiny-num" type="number" min="1" max="100" value="100" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-grow" data-panel="layers">
+        <header class="panel-head"><span>Calques</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="layer-actions">
+            <button class="mini" id="layerNew" title="Nouveau calque">+</button>
+            <button class="mini" id="layerDup" title="Dupliquer">&#10697;</button>
+            <button class="mini" id="layerUp" title="Avancer">&#9650;</button>
+            <button class="mini" id="layerDown" title="Reculer">&#9660;</button>
+            <button class="mini" id="layerMerge" title="Fusionner vers le bas">&#8681;</button>
+            <button class="mini danger" id="layerDelete" title="Supprimer">&#10005;</button>
+          </div>
+          <div class="layers" id="layersList"></div>
+          <div class="layer-props">
+            <label class="check"><span>Opacité</span>
+              <input id="layerOpacity" type="range" min="0" max="100" value="100" />
+              <span id="layerOpacityNum" class="pct">100%</span>
+            </label>
+            <label class="check"><span>Mode</span>
+              <select id="layerBlend" class="cb-select"></select>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="history">
+        <header class="panel-head"><span>Historique</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="hist-actions">
+            <button class="mini" id="histUndo" title="Annuler">&#8630; Annuler</button>
+            <button class="mini" id="histRedo" title="Rétablir">&#8631; Rétablir</button>
+          </div>
+          <div class="hist-info" id="histInfo">0 étape(s)</div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- ======= STATUS ======= -->
+  <footer class="statusbar">
+    <span id="statusLeft">Prêt</span>
+    <span class="spacer"></span>
+    <span id="statusDoc"></span>
+    <span id="statusZoom">100%</span>
+    <span id="statusCoords">x 0 · y 0</span>
+  </footer>
+</div>
+
+<!-- ======= NEW DOCUMENT ======= -->
+<div class="modal docdialog" id="docDialog" role="dialog" aria-modal="true" aria-labelledby="ddTitle">
+  <div class="dd-panel">
+    <header class="dd-head">
+      <span class="dd-logo" aria-hidden="true">AstralPhoto</span>
+      <h1 id="ddTitle">Nouveau document</h1>
+      <button class="dd-close" id="ddClose" title="Fermer" aria-label="Fermer">&#215;</button>
+    </header>
+    <div class="dd-body">
+      <nav class="dd-cats" id="ddCats"></nav>
+      <section class="dd-presets">
+        <div class="dd-presets-grid" id="ddPresets"></div>
+        <p class="dd-empty" id="ddEmpty">Aucun préréglage dans cette catégorie.</p>
+      </section>
+      <aside class="dd-details">
+        <h2 id="ddPresetName">—</h2>
+        <label class="dd-field">Nom du document
+          <input id="ddName" type="text" value="Sans titre" spellcheck="false" />
+        </label>
+        <div class="dd-row">
+          <label class="dd-field">Largeur<input id="ddW" type="number" min="1" step="1" /></label>
+          <label class="dd-field">Hauteur<input id="ddH" type="number" min="1" step="1" /></label>
+        </div>
+        <div class="dd-row">
+          <label class="dd-field">Unités
+            <select id="ddUnit">
+              <option value="px">Pixels</option>
+              <option value="mm">Millimètres</option>
+              <option value="cm">Centimètres</option>
+              <option value="in">Pouces</option>
+            </select>
+          </label>
+          <div class="dd-field">Orientation
+            <div class="dd-orient" id="ddOrient">
+              <button type="button" data-orient="landscape" title="Paysage">&#9633;</button>
+              <button type="button" data-orient="portrait" title="Portrait">&#9641;</button>
+            </div>
+          </div>
+        </div>
+        <div class="dd-row">
+          <label class="dd-field">Fond
+            <select id="ddBg">
+              <option value="white">Blanc</option>
+              <option value="transparent">Transparent</option>
+              <option value="black">Noir</option>
+            </select>
+          </label>
+        </div>
+        <p class="dd-hint" id="ddHint"></p>
+        <div class="dd-actions">
+          <button class="dd-cancel" id="ddCancel">Annuler</button>
+          <button class="dd-create" id="ddCreate">Créer le document</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ======= GENERIC MODAL ======= -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <header class="modal-head"><h2 id="modalTitle">Titre</h2><button class="dd-close" id="modalClose">&#215;</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="dd-cancel" id="modalCancel">Annuler</button>
+      <button class="dd-create" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<input id="fileOpen" type="file" accept="image/*" style="display:none" />
+
+<script src="js/utils.js"></script>
+<script src="js/pixels.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/selection.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/app.js"></script>
+<script src="js/render.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/document.js"></script>
+<script src="js/interaction.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

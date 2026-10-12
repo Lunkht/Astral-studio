@@ -1,0 +1,12 @@
+{
+  "name": "astralphoto",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clone minimaliste d'Adobe Photoshop en HTML/CSS/JS (Canvas 2D), sans dependance.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/astralphoto-test.js",
+    "check": "node scripts/check.js",
+    "verify": "npm run check && npm run test"
+  }
+}
