@@ -59,7 +59,7 @@ js/
   export.js       export SVG / PNG
   main.js         demarrage et cablage
 test/
-  ion-test.js     harnais de tests (Node, sans dependance)
+  astralion-test.js  harnais de tests (Node, sans dependance)
 scripts/
   check.js        verification syntaxique de tous les .js
 ```
