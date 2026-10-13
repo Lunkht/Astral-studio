@@ -1,0 +1,13 @@
+{
+  "name": "astralblender",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clone minimaliste de Blender (3D) en HTML/CSS/JS, rendu logiciel sur Canvas 2D, sans dependance.",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node scripts/serve.js",
+    "test": "node test/astralblender-test.js",
+    "check": "node scripts/check.js",
+    "verify": "npm run check && npm run test"
+  }
+}
