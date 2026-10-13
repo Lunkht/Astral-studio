@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstralAudi — Edition audio</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= MENU BAR ======= -->
+  <div class="menubar">
+    <span class="brand">AstralAudi</span>
+    <button class="menu-title" data-menu="file">Fichier</button>
+    <button class="menu-title" data-menu="edit">Edition</button>
+    <button class="menu-title" data-menu="effect">Effet</button>
+    <button class="menu-title" data-menu="generate">Generer</button>
+    <button class="menu-title" data-menu="track">Piste</button>
+    <button class="menu-title" data-menu="view">Affichage</button>
+    <button class="menu-title" data-menu="help">Aide</button>
+    <div class="menubar-spacer"></div>
+    <span class="brand-sub">Editeur audio libre</span>
+  </div>
+  <div class="menu-pop" id="menuPop" hidden></div>
+
+  <!-- ======= TOOLBAR ======= -->
+  <div class="toolbar">
+    <button class="mini" id="btnImport">Importer...</button>
+    <span class="tool-sep"></span>
+    <button class="mini" id="btnTone" title="Generer un sinus 440 Hz">Sinus</button>
+    <button class="mini" id="btnNoise" title="Generer du bruit blanc">Bruit</button>
+    <span class="tool-sep"></span>
+    <button class="mini" id="btnCut" title="Couper la selection (Ctrl+X)">Couper</button>
+    <button class="mini" id="btnCopy" title="Copier la selection (Ctrl+C)">Copier</button>
+    <button class="mini" id="btnPaste" title="Coller (Ctrl+V)">Coller</button>
+    <button class="mini" id="btnDelete" title="Supprimer la selection (Suppr)">Supprimer</button>
+    <button class="mini" id="btnSilence" title="Rendre la selection silencieuse">Silence</button>
+    <span class="tool-sep"></span>
+    <button class="mini" id="btnAmpUp" title="Amplifier +3 dB">+3 dB</button>
+    <button class="mini" id="btnAmpDown" title="Amplifier -3 dB">-3 dB</button>
+    <button class="mini" id="btnNorm" title="Normaliser">Normaliser</button>
+    <button class="mini" id="btnReverse" title="Inverser">Inverser</button>
+    <button class="mini" id="btnFadeIn" title="Fondu entrant 1 s">Fondu in</button>
+    <button class="mini" id="btnFadeOut" title="Fondu sortant 1 s">Fondu out</button>
+    <span class="tool-sep"></span>
+    <button class="mini" id="btnUndo" title="Annuler (Ctrl+Z)">Annuler</button>
+    <button class="mini" id="btnRedo" title="Retablir (Ctrl+Y)">Retablir</button>
+    <div class="toolbar-spacer"></div>
+    <button class="mini" id="btnZoomOut" title="Zoom arriere">-</button>
+    <button class="mini" id="btnZoomIn" title="Zoom avant">+</button>
+    <button class="mini" id="btnFit" title="Ajuster la vue">Ajuster</button>
+  </div>
+
+  <!-- ======= TRANSPORT ======= -->
+  <div class="transport">
+    <button class="icon-btn" id="btnStart" title="Debut (Home)">&#8676;</button>
+    <button class="icon-btn" id="btnRew" title="Reculer">&#9664;</button>
+    <button class="icon-btn play" id="btnPlay" title="Lecture / Stop (Espace)">Lecture</button>
+    <button class="icon-btn" id="btnFwd" title="Avancer">&#9654;</button>
+    <button class="icon-btn" id="btnEnd" title="Fin (End)">&#8677;</button>
+    <span class="time-val" id="timeVal">0:00.000</span>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="main">
+
+    <!-- TRACK PANEL -->
+    <aside class="tracks">
+      <div class="tracks-head">
+        <span>Pistes</span>
+        <span class="tracks-head-actions">
+          <button class="mini" id="btnAddTrack" title="Nouvelle piste">+</button>
+          <button class="mini danger" id="btnRemoveTrack" title="Supprimer la piste">&#8722;</button>
+        </span>
+      </div>
+      <div class="tracks-list" id="trackList"></div>
+    </aside>
+
+    <!-- TIMELINE -->
+    <div class="workspace">
+      <canvas id="tlCanvas" tabindex="0" role="application" aria-label="Montage audio"></canvas>
+    </div>
+
+    <!-- INSPECTOR -->
+    <aside class="inspector">
+      <div class="panel-head"><span>Proprietes</span></div>
+      <div class="panel-body" id="inspBody"></div>
+      <div class="panel-help">
+        <p>Espace : lecture / stop<br />
+        Glisser sur la regle : deplacer le curseur<br />
+        Glisser sur une piste : selectionner une region<br />
+        Mollette : zoom, Maj+mollette : defiler</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ======= STATUS ======= -->
+  <footer class="statusbar">
+    <span id="statusText">Pret</span>
+    <span class="spacer"></span>
+    <span id="statusRight"></span>
+  </footer>
+</div>
+
+<input type="file" id="mediaInput" accept="audio/*" multiple style="display:none" />
+
+<div class="help-layer" id="helpLayer" hidden>
+  <div class="help-panel">
+    <h2>Raccourcis clavier</h2>
+    <ul>
+      <li><code>Espace</code> lecture / stop</li>
+      <li><code>Origine</code> / <code>Fin</code> debut / fin</li>
+      <li><code>Maison</code> / <code>Fin</code> debut / fin</li>
+      <li><code>Fleches</code> deplacer de 10 ms (Maj = 100 ms)</li>
+      <li><code>Suppr</code> supprimer la selection</li>
+      <li><code>Ctrl+C</code> / <code>Ctrl+X</code> / <code>Ctrl+V</code> copier / couper / coller</li>
+      <li><code>Ctrl+Z</code> / <code>Ctrl+Y</code> annuler / retablir</li>
+      <li><code>M</code> / <code>S</code> muet / solo de la piste</li>
+      <li><code>I</code> inserer 1 s de silence</li>
+      <li><code>+</code> / <code>-</code> zoom</li>
+    </ul>
+    <button class="mini" id="helpClose" onclick="document.getElementById('helpLayer').hidden=true">Fermer</button>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/audiodata.js"></script>
+<script src="js/asset.js"></script>
+<script src="js/clip.js"></script>
+<script src="js/track.js"></script>
+<script src="js/project.js"></script>
+<script src="js/edits.js"></script>
+<script src="js/app.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interaction.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

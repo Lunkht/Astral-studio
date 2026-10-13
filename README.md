@@ -13,6 +13,7 @@ Suite de logiciels Astral.
 | AstralHouse | CAO / architecture 2D (clone minimaliste d'AutoCAD), dessin technique sur Canvas 2D. | [`apps/AstralHouse`](apps/AstralHouse) |
 | AstralMovie | Montage video (clone minimaliste d'Adobe Premiere Pro) : medias, pistes, timeline, export WebM. | [`apps/AstralMovie`](apps/AstralMovie) |
 | AstralEffet | Compositing / motion graphics (clone minimaliste d'Adobe After Effects) : calques, images cles, effets. | [`apps/AstralEffet`](apps/AstralEffet) |
+| AstralAudi | Edition audio (clone minimaliste d'Audacity) : pistes, formes d'onde, montage, export WAV. | [`apps/AstralAudi`](apps/AstralAudi) |
 
 ## Structure
 
@@ -25,6 +26,7 @@ apps/
   AstralHouse/     CAO / architecture 2D (ouvrir apps/AstralHouse/index.html, ou `npm run serve` dans apps/AstralHouse)
   AstralMovie/      montage video (ouvrir apps/AstralMovie/index.html, ou `npm run serve` dans apps/AstralMovie)
   AstralEffet/      compositing / motion graphics (ouvrir apps/AstralEffet/index.html, ou `npm run serve` dans apps/AstralEffet)
+  AstralAudi/       edition audio (ouvrir apps/AstralAudi/index.html, ou `npm run serve` dans apps/AstralAudi)
 ```
 
 Chaque application est autonome : voir son propre `README.md` pour l'utilisation, les raccourcis
@@ -37,4 +39,4 @@ Chaque dossier est cree avec un `README.md` decrivant le perimetre envisage.
 
 | Application | Inspiration | Type | Dossier |
 | --- | --- | --- | --- |
-| AstralAdi | (audio) | Montage audio | [`apps/AstralAdi`](apps/AstralAdi) |
+| — | — | — | — |
