@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstralAnimate — Animation 2D</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= MENU BAR ======= -->
+  <div class="menubar">
+    <span class="brand">AstralAnimate</span>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Fichier</button>
+      <div class="menu-drop">
+        <button data-action="new">Nouveau<span class="k">Ctrl+N</span></button>
+        <div class="sep"></div>
+        <button data-action="export-svg">Exporter en SVG…</button>
+        <button data-action="export-png">Exporter en PNG…</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Édition</button>
+      <div class="menu-drop">
+        <button data-action="undo">Annuler<span class="k">Ctrl+Z</span></button>
+        <button data-action="redo">Rétablir<span class="k">Ctrl+Maj+Z</span></button>
+        <div class="sep"></div>
+        <button data-action="duplicate">Dupliquer<span class="k">Ctrl+D</span></button>
+        <button data-action="delete">Supprimer<span class="k">Suppr</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Animation</button>
+      <div class="menu-drop">
+        <button data-action="key-add">Insérer une image clé<span class="k">F6</span></button>
+        <button data-action="key-del">Supprimer l'image clé<span class="k">Maj+F6</span></button>
+        <div class="sep"></div>
+        <button data-action="frame-prev">Image précédente<span class="k">,</span></button>
+        <button data-action="frame-next">Image suivante<span class="k">.</span></button>
+        <div class="sep"></div>
+        <button data-action="play">Lecture / Pause<span class="k">Entrée</span></button>
+        <button data-action="onion">Peaux d'oignon</button>
+        <button data-action="grid">Grille</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Calque</button>
+      <div class="menu-drop">
+        <button data-action="layer-new">Nouveau calque</button>
+        <button data-action="layer-up">Avancer</button>
+        <button data-action="layer-down">Reculer</button>
+        <button data-action="layer-delete">Supprimer le calque</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Affichage</button>
+      <div class="menu-drop">
+        <button data-action="zoom-in">Zoom avant<span class="k">Ctrl++</span></button>
+        <button data-action="zoom-out">Zoom arrière<span class="k">Ctrl+-</span></button>
+        <button data-action="fit">Ajuster à la fenêtre<span class="k">Ctrl+0</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Aide</button>
+      <div class="menu-drop">
+        <button data-action="about">À propos d'AstralAnimate</button>
+      </div>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <input id="docName" class="doc-name" type="text" value="Sans titre" spellcheck="false" />
+  </div>
+
+  <!-- ======= CONTROL BAR ======= -->
+  <div class="controlbar">
+    <div class="cb-group cb-empty">
+      <span class="cb-hint"><b>V</b> sélection · <b>R</b> rectangle · <b>O</b> ellipse · <b>L</b> ligne · <b>P</b> crayon · <b>T</b> texte</span>
+    </div>
+
+    <div class="cb-group">
+      <label class="cb-color" title="Remplissage"><span>Remplissage</span><input id="cbFill" type="color" value="#c9d7f0" /></label>
+      <label class="cb-color" title="Contour"><span>Contour</span><input id="cbStroke" type="color" value="#2b3a55" /></label>
+      <label class="cb-field"><span>Épaisseur</span><input id="cbStrokeW" type="number" min="0" max="80" step="1" value="2" /></label>
+    </div>
+
+    <div class="cb-group cb-tool" id="cbText" style="display:none">
+      <label class="cb-field"><span>Taille</span><input id="cbFontSize" type="number" min="4" max="400" step="1" value="48" /></label>
+    </div>
+
+    <div class="menubar-spacer"></div>
+
+    <div class="cb-group cb-history">
+      <button class="icon-btn" id="undoBtn" title="Annuler">&#8630;</button>
+      <button class="icon-btn" id="redoBtn" title="Rétablir">&#8631;</button>
+    </div>
+
+    <div class="cb-group cb-playback">
+      <button class="icon-btn" id="tlFirst" title="Début">&#8676;</button>
+      <button class="icon-btn" id="tlPrev" title="Image précédente">&#9664;</button>
+      <button class="icon-btn play" id="tlPlay" title="Lecture / Pause">&#9654;</button>
+      <button class="icon-btn" id="tlNext" title="Image suivante">&#9654;&#124;</button>
+      <button class="icon-btn" id="tlLast" title="Fin">&#8677;</button>
+      <span class="zval" id="frameVal">0</span>
+      <label class="cb-field tiny"><span>IPS</span><input id="fpsVal" type="number" min="1" max="60" step="1" value="12" /></label>
+    </div>
+
+    <div class="cb-group cb-zoom">
+      <button class="zbtn" id="zoomOut">−</button>
+      <span class="zval" id="zoomVal">100%</span>
+      <button class="zbtn" id="zoomIn">+</button>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="main">
+
+    <!-- LEFT TOOL RAIL -->
+    <aside class="toolrail" role="toolbar" aria-label="Outils" aria-orientation="vertical">
+      <div class="tool-grid">
+        <button class="tool" data-tool="select" title="Sélection (V)">
+          <svg viewBox="0 0 24 24"><path d="M6 3l13 8-5.5 1.5L11 18z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="rect" title="Rectangle (R)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+        </button>
+        <button class="tool" data-tool="ellipse" title="Ellipse (O)">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+        </button>
+        <button class="tool" data-tool="line" title="Ligne (L)">
+          <svg viewBox="0 0 24 24"><path d="M4 20 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <button class="tool" data-tool="pencil" title="Crayon (P)">
+          <svg viewBox="0 0 24 24"><path d="M4 20l3-1 11-11-2-2L5 17l-1 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="text" title="Texte (T)">
+          <svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M8.5 20h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="hand" title="Main (H)">
+          <svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 1 1 3 0V11m0-1v2m0-2.5V4.5a1.5 1.5 0 1 1 3 0V12m0-1v1m0-2.5a1.5 1.5 0 1 1 3 0V16a5 5 0 0 1-5 5h-1.2a4 4 0 0 1-3-1.4L6.5 16 5 14.2a1.6 1.6 0 0 1 2.4-2.1L9 13.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="zoom" title="Zoom (Z)">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 15.5 20 20M11 8.5v5M8.5 11h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <div class="workspace" id="workspace">
+      <canvas id="canvas" tabindex="0" role="application" aria-label="Scène d'animation"></canvas>
+    </div>
+
+    <!-- RIGHT DOCK -->
+    <aside class="dock" id="dock">
+
+      <section class="panel" data-panel="props">
+        <header class="panel-head"><span>Propriétés</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <p class="empty" id="propsEmpty">Aucune forme sélectionnée.</p>
+          <div id="propsBody" style="display:none">
+            <div class="appr-row"><span class="appr-label">X</span><input id="pX" class="tiny-num" type="number" step="1" /></div>
+            <div class="appr-row"><span class="appr-label">Y</span><input id="pY" class="tiny-num" type="number" step="1" /></div>
+            <div class="appr-row"><span class="appr-label">L</span><input id="pW" class="tiny-num" type="number" step="1" /></div>
+            <div class="appr-row"><span class="appr-label">H</span><input id="pH" class="tiny-num" type="number" step="1" /></div>
+            <div class="appr-row"><span class="appr-label">Remplissage</span><input id="pFill" type="color" /></div>
+            <div class="appr-row"><span class="appr-label">Contour</span><input id="pStroke" type="color" /></div>
+            <div class="appr-row"><span class="appr-label">Épaisseur</span><input id="pStrokeW" class="tiny-num" type="number" min="0" max="80" step="1" /></div>
+            <div class="appr-row"><span class="appr-label">Opacité</span><input id="pOpacity" type="range" min="0" max="100" /><span id="pOpacityNum" class="pct">100%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-grow" data-panel="layers">
+        <header class="panel-head"><span>Calques</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="layer-actions">
+            <button class="mini" id="layerNew" title="Nouveau calque">+</button>
+            <button class="mini" id="layerUp" title="Avancer">&#9650;</button>
+            <button class="mini" id="layerDown" title="Reculer">&#9660;</button>
+            <button class="mini danger" id="layerDelete" title="Supprimer">&#10005;</button>
+          </div>
+          <div class="layers" id="layersList"></div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- ======= TIMELINE ======= -->
+  <section class="timeline" id="timeline">
+    <div class="tl-toolbar">
+      <button class="mini" id="tlKeyAdd" title="Insérer une image clé">+ Clé</button>
+      <button class="mini" id="tlKeyDel" title="Supprimer l'image clé">− Clé</button>
+      <label class="check"><input type="checkbox" id="onionChk" /> Peaux d'oignon</label>
+      <label class="check"><input type="checkbox" id="gridChk" /> Grille</label>
+      <span class="tl-frame-count">Images : <input id="frameCount" class="tiny-num" type="number" min="1" max="600" step="1" value="24" /></span>
+    </div>
+    <div class="tl-cols">
+      <div class="tl-names">
+        <div class="tl-name-head">Calques</div>
+        <div class="tl-names-body" id="tlNames"></div>
+      </div>
+      <div class="tl-track">
+        <div class="tl-nums" id="tlNums"></div>
+        <div class="tl-rows" id="tlRows"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= STATUS ======= -->
+  <footer class="statusbar">
+    <span id="statusLeft">Prêt</span>
+    <span class="spacer"></span>
+    <span id="statusDoc"></span>
+    <span id="statusFrame">image 0</span>
+    <span id="statusZoom">100%</span>
+    <span id="statusCoords">x 0 · y 0</span>
+  </footer>
+</div>
+
+<!-- ======= NEW DOCUMENT ======= -->
+<div class="modal docdialog" id="docDialog" role="dialog" aria-modal="true" aria-labelledby="ddTitle">
+  <div class="dd-panel">
+    <header class="dd-head">
+      <span class="dd-logo" aria-hidden="true">AstralAnimate</span>
+      <h1 id="ddTitle">Nouveau document</h1>
+      <button class="dd-close" id="ddClose" title="Fermer" aria-label="Fermer">&#215;</button>
+    </header>
+    <div class="dd-body">
+      <div class="dd-form">
+        <label class="dd-field">Nom du document
+          <input id="ddName" type="text" value="Sans titre" spellcheck="false" />
+        </label>
+        <div class="dd-row">
+          <label class="dd-field">Largeur<input id="ddW" type="number" min="1" step="1" value="800" /></label>
+          <label class="dd-field">Hauteur<input id="ddH" type="number" min="1" step="1" value="600" /></label>
+        </div>
+        <div class="dd-row">
+          <label class="dd-field">Images / seconde<input id="ddFps" type="number" min="1" max="60" step="1" value="12" /></label>
+          <label class="dd-field">Nombre d'images<input id="ddFrames" type="number" min="1" max="600" step="1" value="24" /></label>
+        </div>
+        <div class="dd-row">
+          <label class="dd-field">Fond
+            <select id="ddBg">
+              <option value="#ffffff">Blanc</option>
+              <option value="#000000">Noir</option>
+              <option value="#808080">Gris</option>
+            </select>
+          </label>
+        </div>
+        <div class="dd-actions">
+          <button class="dd-cancel" id="ddCancel">Annuler</button>
+          <button class="dd-create" id="ddCreate">Créer le document</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= GENERIC MODAL ======= -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <header class="modal-head"><h2 id="modalTitle">Titre</h2><button class="dd-close" id="modalClose">&#215;</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="dd-cancel" id="modalCancel">Annuler</button>
+      <button class="dd-create" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/shapes.js"></script>
+<script src="js/layer.js"></script>
+<script src="js/app.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interaction.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
