@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstralMovie — Montage vidéo</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= MENU BAR ======= -->
+  <div class="menubar">
+    <span class="brand">AstralMovie</span>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Fichier</button>
+      <div class="menu-drop">
+        <button data-action="new">Nouveau<span class="k">Ctrl+N</span></button>
+        <div class="sep"></div>
+        <button data-action="import">Importer des médias…</button>
+        <div class="sep"></div>
+        <button data-action="export-video">Exporter la vidéo (WebM)…</button>
+        <button data-action="export-png">Exporter l'image courante (PNG)…</button>
+        <button data-action="export-json">Exporter le projet (JSON)…</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Édition</button>
+      <div class="menu-drop">
+        <button data-action="undo">Annuler<span class="k">Ctrl+Z</span></button>
+        <button data-action="redo">Rétablir<span class="k">Ctrl+Maj+Z</span></button>
+        <div class="sep"></div>
+        <button data-action="duplicate">Dupliquer<span class="k">Ctrl+D</span></button>
+        <button data-action="delete">Supprimer<span class="k">Suppr</span></button>
+        <button data-action="split">Diviser au playhead<span class="k">S</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Séquence</button>
+      <div class="menu-drop">
+        <button data-action="add-title">Ajouter un titre<span class="k">T</span></button>
+        <div class="sep"></div>
+        <button data-action="add-vtrack">Ajouter une piste vidéo</button>
+        <button data-action="add-atrack">Ajouter une piste audio</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Affichage</button>
+      <div class="menu-drop">
+        <button data-action="zoom-in">Zoom avant<span class="k">Ctrl++</span></button>
+        <button data-action="zoom-out">Zoom arrière<span class="k">Ctrl+-</span></button>
+        <button data-action="fit">Échelle par défaut<span class="k">Ctrl+0</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Aide</button>
+      <div class="menu-drop">
+        <button data-action="about">À propos d'AstralMovie</button>
+      </div>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <input id="docName" class="doc-name" type="text" value="Séquence" spellcheck="false" />
+  </div>
+
+  <!-- ======= CONTROL BAR ======= -->
+  <div class="controlbar">
+    <div class="cb-group">
+      <button class="mini" id="importBtn" title="Importer des médias">Importer…</button>
+      <button class="mini" id="titleBtn" title="Ajouter un titre (T)">Titre</button>
+    </div>
+
+    <div class="menubar-spacer"></div>
+
+    <div class="cb-group cb-history">
+      <button class="icon-btn" id="undoBtn" title="Annuler">&#8630;</button>
+      <button class="icon-btn" id="redoBtn" title="Rétablir">&#8631;</button>
+    </div>
+
+    <div class="cb-group cb-transport">
+      <button class="icon-btn" id="tlFirst" title="Début">&#8676;</button>
+      <button class="icon-btn" id="tlPrev" title="Image précédente (←)">&#9664;</button>
+      <button class="icon-btn play" id="tlPlay" title="Lecture / Pause (Espace)">&#9654;</button>
+      <button class="icon-btn" id="tlNext" title="Image suivante (→)">&#9654;&#124;</button>
+      <button class="icon-btn" id="tlLast" title="Fin">&#8677;</button>
+      <span class="tc" id="timeVal">00:00:00:00</span>
+      <label class="cb-field tiny"><span>IPS</span><input id="fpsVal" type="number" min="1" max="60" step="1" value="30" /></label>
+    </div>
+
+    <div class="cb-group cb-zoom">
+      <button class="zbtn" id="zoomOut">−</button>
+      <span class="zval" id="zoomVal">90</span>
+      <button class="zbtn" id="zoomIn">+</button>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="main">
+
+    <!-- MEDIA BIN -->
+    <aside class="bin" id="bin">
+      <section class="panel panel-grow" data-panel="assets">
+        <header class="panel-head"><span>Médias</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="bin-actions">
+            <button class="mini" id="binImport" title="Importer des médias">Importer…</button>
+          </div>
+          <p class="empty" id="assetEmpty">Aucun média importé.</p>
+          <div class="assets" id="assetList"></div>
+          <div class="drop-hint" id="dropHint">Déposez des fichiers ici</div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- PREVIEW -->
+    <div class="workspace" id="workspace">
+      <canvas id="canvas" tabindex="0" role="application" aria-label="Moniteur programme"></canvas>
+    </div>
+
+    <!-- INSPECTOR -->
+    <aside class="dock" id="dock">
+      <section class="panel" data-panel="insp">
+        <header class="panel-head"><span>Propriétés</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <p class="empty" id="inspEmpty">Aucun clip sélectionné.</p>
+          <div id="inspBody" style="display:none">
+            <div class="appr-row"><span class="appr-label">Nom</span><input id="insName" class="tiny-num wide" type="text" /></div>
+            <div class="appr-row"><span class="appr-label">Piste</span><select id="insTrack" class="tiny-num wide"></select></div>
+            <div class="appr-row"><span class="appr-label">Début</span><span class="tc-sm" id="insStart">00:00:00:00</span></div>
+            <div class="appr-row"><span class="appr-label">Durée</span><input id="insDuration" class="tiny-num" type="number" min="0.04" step="0.1" /></div>
+            <div class="appr-row"><span class="appr-label">Source</span><span class="tc-sm" id="insIn">00:00:00:00</span></div>
+            <div class="appr-row"><span class="appr-label">Vitesse</span><input id="insSpeed" class="tiny-num" type="number" min="0.1" max="8" step="0.1" /></div>
+            <div class="appr-row"><span class="appr-label">Opacité</span><input id="insOpacity" type="range" min="0" max="100" /><span id="insOpacityNum" class="pct">100%</span></div>
+            <div id="inspTitle" style="display:none">
+              <div class="appr-row"><span class="appr-label">Texte</span><input id="insText" class="tiny-num wide" type="text" /></div>
+              <div class="appr-row"><span class="appr-label">Couleur</span><input id="insColor" type="color" /></div>
+              <div class="appr-row"><span class="appr-label">Taille</span><input id="insFontSize" class="tiny-num" type="number" min="8" max="400" step="1" /></div>
+            </div>
+            <div class="appr-actions">
+              <button class="mini" id="insSplit" title="Diviser au playhead">Diviser</button>
+              <button class="mini danger" id="insDelete" title="Supprimer">Supprimer</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- ======= TIMELINE ======= -->
+  <section class="timeline" id="timeline">
+    <div class="tl-toolbar">
+      <button class="zbtn" id="tlZoomOut">−</button>
+      <span class="zval" id="tlZoomVal">90</span>
+      <button class="zbtn" id="tlZoomIn">+</button>
+      <button class="mini" id="tlAddV">+ Piste vidéo</button>
+      <button class="mini" id="tlAddA">+ Piste audio</button>
+      <label class="check"><input type="checkbox" id="snapChk" checked /> Aimantation</label>
+      <span class="tl-hint">Glisser = déplacer · bords = rogner · clic sur la règle = se placer</span>
+    </div>
+    <div class="tl-cols">
+      <div class="tl-names">
+        <div class="tl-name-head">Pistes</div>
+        <div class="tl-names-body" id="tlNames"></div>
+      </div>
+      <div class="tl-track" id="tlTrack">
+        <div class="tl-ruler" id="tlRuler"></div>
+        <div class="tl-rows" id="tlRows"></div>
+        <div class="tl-playhead" id="tlPlayhead"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= STATUS ======= -->
+  <footer class="statusbar">
+    <span id="statusLeft">Prêt</span>
+    <span class="spacer"></span>
+    <span id="statusSeq"></span>
+    <span id="statusClips">0 clip</span>
+    <span id="statusSel">aucune sélection</span>
+    <span id="statusTime">00:00:00:00</span>
+  </footer>
+</div>
+
+<input type="file" id="fileInput" accept="video/*,audio/*,image/*" multiple style="display:none" />
+
+<!-- ======= GENERIC MODAL ======= -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <header class="modal-head"><h2 id="modalTitle">Titre</h2><button class="dd-close" id="modalClose">&#215;</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="dd-cancel" id="modalCancel">Fermer</button>
+      <button class="dd-create" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/asset.js"></script>
+<script src="js/clip.js"></script>
+<script src="js/project.js"></script>
+<script src="js/app.js"></script>
+<script src="js/player.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interaction.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

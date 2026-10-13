@@ -1,0 +1,13 @@
+{
+  "name": "astralmovie",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clone minimaliste d'Adobe Premiere Pro (montage video) en HTML/CSS/JS (Canvas 2D), sans dependance.",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node scripts/serve.js",
+    "test": "node test/astralmovie-test.js",
+    "check": "node scripts/check.js",
+    "verify": "npm run check && npm run test"
+  }
+}
