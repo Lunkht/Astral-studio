@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstralEffet</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="menubar">
+      <span class="brand">AstralEffet</span>
+      <nav class="menu-nav">
+        <button type="button" data-menu="file">Fichier</button>
+        <button type="button" data-menu="edit">Edition</button>
+        <button type="button" data-menu="layer">Calque</button>
+        <button type="button" data-menu="view">Affichage</button>
+        <button type="button" data-menu="help">Aide</button>
+      </nav>
+      <span id="statusText" class="menubar-status">Pret</span>
+    </header>
+
+    <div class="body">
+      <aside class="rail">
+        <button type="button" class="rail-btn" data-tool="select" title="Selection (V)">V</button>
+        <button type="button" class="rail-btn" data-tool="hand" title="Main (H)">H</button>
+      </aside>
+
+      <section class="main">
+        <div class="controlbar">
+          <button type="button" id="btnStart" title="Debut (Origine)">&#124;&#9664;</button>
+          <button type="button" id="btnPrev" title="Image precedente">&#9664;</button>
+          <button type="button" id="btnPlay" class="primary" title="Lecture (Espace)">Lecture</button>
+          <button type="button" id="btnNext" title="Image suivante">&#9654;</button>
+          <button type="button" id="btnEnd" title="Fin">&#9654;&#124;</button>
+          <span id="timeVal" class="mono">00:00:00:00</span>
+          <label class="inline">IPS <input id="fpsVal" type="number" min="1" max="120" step="1"></label>
+          <span class="sep"></span>
+          <button type="button" id="btnZoomOut" title="Zoom arriere">-</button>
+          <span id="zoomVal" class="mono">100%</span>
+          <button type="button" id="btnZoomIn" title="Zoom avant">+</button>
+          <button type="button" id="btnZoomFit" title="Ajuster">Ajuster</button>
+          <span class="sep"></span>
+          <button type="button" id="btnAutoKey" class="toggle" title="Images cles automatiques">Auto</button>
+        </div>
+        <div class="viewer">
+          <canvas id="compCanvas"></canvas>
+        </div>
+      </section>
+
+      <aside class="dock">
+        <div class="panel">
+          <div class="panel-head">Calques</div>
+          <div class="panel-body" id="layersBody"></div>
+          <div class="panel-foot">
+            <button type="button" id="btnAddSolid">Solide</button>
+            <button type="button" id="btnAddText">Texte</button>
+            <button type="button" id="btnAddShape">Forme</button>
+            <button type="button" id="btnAddMedia">Media</button>
+          </div>
+        </div>
+        <div class="panel grow">
+          <div class="panel-head">Proprietes</div>
+          <div class="panel-body" id="inspectorBody"></div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="timeline">
+      <div class="tl-head">
+        <span>Chronologie</span>
+        <span id="tlInfo" class="mono"></span>
+      </div>
+      <div class="tl-ruler" id="tlRuler"></div>
+      <div class="tl-rows-wrap">
+        <div class="tl-rows" id="tlRows"></div>
+        <div class="tl-playhead" id="tlPlayhead"></div>
+      </div>
+    </section>
+
+    <footer class="statusbar">
+      <span id="statusLeft">AstralEffet - clone minimaliste d'After Effects</span>
+      <span id="statusRight" class="mono"></span>
+    </footer>
+  </div>
+
+  <input id="mediaInput" type="file" accept="image/*,video/*" hidden>
+
+  <div id="menuPop" class="menu-pop" hidden></div>
+
+  <div id="helpLayer" class="help-layer" hidden>
+    <div class="help-card">
+      <h2>Raccourcis</h2>
+      <ul>
+        <li><b>Espace</b> lecture / pause</li>
+        <li><b>Fleches G / D</b> image precedente / suivante (Maj = 10)</li>
+        <li><b>Fleches H / B</b> deplacer le calque selectionne</li>
+        <li><b>Origine / Fin</b> debut / fin</li>
+        <li><b>V</b> selection, <b>H</b> main</li>
+        <li><b>T</b> texte, <b>S</b> solide, <b>E</b> ellipse, <b>R</b> rectangle, <b>Y</b> etoile</li>
+        <li><b>P</b> image cle position, <b>O</b> opacite, <b>N</b> rotation</li>
+        <li><b>Ctrl+C / V / Z / Y</b> ... <b>Ctrl+D</b> dupliquer, <b>Ctrl+A</b> tout</li>
+      </ul>
+      <p>Cliquez a nouveau sur Aide puis "Raccourcis" pour fermer.</p>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/keyframe.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/asset.js"></script>
+  <script src="js/layer.js"></script>
+  <script src="js/comp.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/interaction.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

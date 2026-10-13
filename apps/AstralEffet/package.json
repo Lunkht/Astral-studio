@@ -1,0 +1,13 @@
+{
+  "name": "astraleffet",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clone minimaliste d'Adobe After Effects (compositing, motion graphics) en HTML/CSS/JS (Canvas 2D), sans dependance.",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node scripts/serve.js",
+    "test": "node test/astraleffet-test.js",
+    "check": "node scripts/check.js",
+    "verify": "npm run check && npm run test"
+  }
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstralHouse — CAO / architecture</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= MENU BAR ======= -->
+  <div class="menubar">
+    <span class="brand">AstralHouse</span>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Fichier</button>
+      <div class="menu-drop">
+        <button data-action="new">Nouveau dessin<span class="k">Ctrl+N</span></button>
+        <button data-action="sample">Insérer l'exemple…</button>
+        <button data-action="open">Ouvrir (JSON)…</button>
+        <div class="sep"></div>
+        <button data-action="save-json">Enregistrer (JSON)</button>
+        <div class="sep"></div>
+        <button data-action="export-svg">Exporter en SVG…</button>
+        <button data-action="export-dxf">Exporter en DXF…</button>
+        <button data-action="export-png">Capture PNG…</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Édition</button>
+      <div class="menu-drop">
+        <button data-action="undo">Annuler<span class="k">Ctrl+Z</span></button>
+        <button data-action="redo">Rétablir<span class="k">Ctrl+Maj+Z</span></button>
+        <div class="sep"></div>
+        <button data-action="select-all">Tout sélectionner<span class="k">Ctrl+A</span></button>
+        <button data-action="delete">Supprimer<span class="k">Suppr</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Affichage</button>
+      <div class="menu-drop">
+        <button data-action="zoom-extents">Zoom étendu<span class="k">Origine</span></button>
+        <button data-action="zoom-in">Zoom avant<span class="k">+</span></button>
+        <button data-action="zoom-out">Zoom arrière<span class="k">-</span></button>
+        <div class="sep"></div>
+        <button data-action="toggle-grid">Grille<span class="k">F7</span></button>
+        <button data-action="toggle-axes">Axes</button>
+        <button data-action="toggle-snap">Accrochage<span class="k">F9</span></button>
+        <button data-action="toggle-ortho">Ortho<span class="k">F8</span></button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Calques</button>
+      <div class="menu-drop">
+        <button data-action="add-layer">Nouveau calque</button>
+      </div>
+    </div>
+
+    <div class="menu" data-menu>
+      <button class="menu-title">Aide</button>
+      <div class="menu-drop">
+        <button data-action="about">À propos d'AstralHouse</button>
+      </div>
+    </div>
+
+    <div class="menubar-spacer"></div>
+    <input id="drawingName" class="doc-name" type="text" value="Dessin1" spellcheck="false" />
+  </div>
+
+  <!-- ======= CONTROL BAR ======= -->
+  <div class="controlbar">
+    <div class="cb-group">
+      <label class="cb-field"><span>Calque</span>
+        <select id="currentLayer" class="cb-select"></select>
+      </label>
+    </div>
+
+    <div class="cb-group">
+      <button class="mini toggle" data-action="toggle-ortho" id="orthoBtn" title="Mode ortho (F8)">Ortho</button>
+      <button class="mini toggle" data-action="toggle-snap" id="snapBtn" title="Accrochage objet (F9)">Accrochage</button>
+      <button class="mini toggle" data-action="toggle-grid" id="gridBtn" title="Grille (F7)">Grille</button>
+    </div>
+
+    <div class="menubar-spacer"></div>
+
+    <div class="cb-group cb-history">
+      <button class="icon-btn" id="undoBtn" title="Annuler">&#8630;</button>
+      <button class="icon-btn" id="redoBtn" title="Rétablir">&#8631;</button>
+    </div>
+
+    <div class="cb-group cb-view">
+      <button class="mini" data-action="zoom-out">&#8722;</button>
+      <button class="mini" data-action="zoom-extents">Étendu</button>
+      <button class="mini" data-action="zoom-in">+</button>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="main">
+
+    <!-- LEFT TOOL RAIL -->
+    <aside class="toolrail" role="toolbar" aria-label="Outils" aria-orientation="vertical">
+      <div class="tool-grid">
+        <button class="tool" data-tool="select" title="Sélection (V)">
+          <svg viewBox="0 0 24 24"><path d="M6 3l13 8-5.5 1.5L11 18z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="line" title="Ligne (L)">
+          <svg viewBox="0 0 24 24"><path d="M5 19 19 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><circle cx="19" cy="5" r="1.6" fill="currentColor"/></svg>
+        </button>
+        <button class="tool" data-tool="polyline" title="Polyligne (P)">
+          <svg viewBox="0 0 24 24"><path d="M4 18 9 8l5 8 6-12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="rectangle" title="Rectangle (R)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <button class="tool" data-tool="circle" title="Cercle (C)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <button class="tool" data-tool="arc" title="Arc 3 points (A)">
+          <svg viewBox="0 0 24 24"><path d="M4 18A12 12 0 0 1 20 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="4" cy="18" r="1.4" fill="currentColor"/><circle cx="20" cy="10" r="1.4" fill="currentColor"/></svg>
+        </button>
+        <button class="tool" data-tool="dimension" title="Cotation (D)">
+          <svg viewBox="0 0 24 24"><path d="M5 6v12M19 6v12M5 12h14M8 9l-3 3 3 3M16 9l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="hatch" title="Hachure (H)">
+          <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 17 17 6M9 17 19 8M6 12 12 6" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        </button>
+        <button class="tool" data-tool="text" title="Texte (T)">
+          <svg viewBox="0 0 24 24"><path d="M5 6h14M12 6v13M9 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button class="tool" data-tool="move" title="Déplacer (M)">
+          <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="measure" title="Mesurer (K)">
+          <svg viewBox="0 0 24 24"><path d="M3 16 16 3l5 5L8 21z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11l2 2M11 8l2 2M14 5l2 2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <div class="workspace" id="workspace">
+      <canvas id="canvas" tabindex="0" role="application" aria-label="Plan de dessin"></canvas>
+    </div>
+
+    <!-- RIGHT DOCK -->
+    <aside class="dock" id="dock">
+
+      <section class="panel" data-panel="layers">
+        <header class="panel-head"><span>Calques</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="layers" id="layerList"></div>
+          <div class="row-btns">
+            <button class="mini" id="addLayerBtn">+ Calque</button>
+            <button class="mini" id="delLayerBtn">Supprimer</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="properties">
+        <header class="panel-head"><span>Propriétés</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <p class="empty" id="propEmpty">Aucun objet sélectionné.</p>
+          <div id="propBody" style="display:none">
+            <div class="appr-row"><span class="appr-label">Calque</span><select id="propLayer" class="tiny-num"></select></div>
+            <div class="appr-row"><span class="appr-label">Couleur</span><input id="propColor" type="color" /></div>
+            <div class="appr-row"><span class="appr-label">Trait</span>
+              <select id="propLinetype" class="tiny-num">
+                <option value="bylayer">Du calque</option>
+                <option value="continuous">Continu</option>
+                <option value="dashed">Tirets</option>
+                <option value="dotted">Pointillés</option>
+                <option value="dashdot">Tiret-point</option>
+                <option value="center">Axes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="settings">
+        <header class="panel-head"><span>Réglages</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="appr-row"><span class="appr-label">Grille</span><input id="gridSize" class="tiny-num" type="number" step="1" min="0.1" /></div>
+          <label class="check"><input type="checkbox" id="gridChk" /> Grille (F7)</label>
+          <label class="check"><input type="checkbox" id="axesChk" /> Axes</label>
+          <label class="check"><input type="checkbox" id="snapChk" /> Accrochage (F9)</label>
+          <label class="check"><input type="checkbox" id="orthoChk" /> Ortho (F8)</label>
+          <div class="sep-label">Modes d'accrochage</div>
+          <label class="check"><input type="checkbox" data-snapmode="endpoint" checked /> Extrémités</label>
+          <label class="check"><input type="checkbox" data-snapmode="midpoint" checked /> Milieux</label>
+          <label class="check"><input type="checkbox" data-snapmode="center" checked /> Centres</label>
+          <label class="check"><input type="checkbox" data-snapmode="intersection" checked /> Intersections</label>
+          <label class="check"><input type="checkbox" data-snapmode="nearest" /> Proche</label>
+          <label class="check"><input type="checkbox" data-snapmode="grid" /> Grille</label>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="measure">
+        <header class="panel-head"><span>Mesure</span><button class="collapse">▾</button></header>
+        <div class="panel-body">
+          <div class="measure-val" id="measureBox">—</div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+  <!-- ======= STATUS ======= -->
+  <footer class="statusbar">
+    <span id="statusLeft">Prêt</span>
+    <span class="spacer"></span>
+    <span id="statusCoords">0, 0</span>
+    <span id="statusSnap">ACC -</span>
+    <span id="statusZoom">zoom 1x</span>
+    <span id="statusSel">aucune sel.</span>
+  </footer>
+</div>
+
+<input type="file" id="fileInput" accept=".json,application/json" style="display:none" />
+
+<!-- ======= GENERIC MODAL ======= -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <header class="modal-head"><h2 id="modalTitle">Titre</h2><button class="dd-close" id="modalClose">&#215;</button></header>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="dd-cancel" id="modalCancel">Fermer</button>
+      <button class="dd-create" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/drawing.js"></script>
+<script src="js/snap.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/app.js"></script>
+<script src="js/render.js"></script>
+<script src="js/interaction.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/export.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
